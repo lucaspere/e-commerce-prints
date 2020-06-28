@@ -7,7 +7,6 @@ module.exports = {
 
 
 async function listProducts (req, res) {
-   res.setHeader('Access-Control-Allow-Origin', '*')
    const { offset = 0, limit = 25, tag } = req.query
 
    try {
@@ -22,7 +21,6 @@ async function listProducts (req, res) {
 }
 
 async function getProduct (req, res, next) {
-   res.setHeader('Acess-Control-Allow-Origin', '*')
    const { id } = req.params
 
    try {
