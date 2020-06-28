@@ -16,7 +16,7 @@ async function list(opts = {}) {
       .slice(offset, offset + limit)
 }
 
-async function get (id = '') {
+async function get(id = '') {
    const products = JSON.parse(await fs.readFile(productsFile))
 
    return products.find((item) => item._id === id)
