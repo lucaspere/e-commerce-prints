@@ -1,0 +1,19 @@
+{
+  "name": "e-commerce-prints",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/lucaspere/e-commerce-prints.git"
+  },
+  "author": "Lucas Pereira",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/lucaspere/e-commerce-prints/issues"
+  },
+  "homepage": "https://github.com/lucaspere/e-commerce-prints#readme"
+}
