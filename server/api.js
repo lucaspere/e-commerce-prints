@@ -1,34 +1,29 @@
 const Products = require('./products')
+const autoCatch = require('./lib/auto-catch')
 
-module.exports = {
+module.exports = autoCatch({
    listProducts,
    getProduct
-}
+})
 
 
-async function listProducts (req, res) {
+async function listProducts(req, res) {
    const { offset = 0, limit = 25, tag } = req.query
 
-   try {
-      res.json(await Products.list({
-         offset: Number(offset),
-         limit: Number(limit),
-         tag
-      }))
-   } catch (err) {
-      return res.status(500).json({ error: err.message })
-   }
+   const products = await Products.list({
+      offset: Number(offset),
+      limit: Number(limit),
+      tag
+   })
+
+   res.json(products)
 }
 
-async function getProduct (req, res, next) {
+async function getProduct(req, res, next) {
    const { id } = req.params
 
-   try {
-      const products = await Products.get(id)
-      if(!products) return next()
+   const products = await Products.get(id)
+   if (!products) return next()
 
-      res.json(products)
-   } catch (err) {
-      res.status(500).json({ error: err.message})
-   }
+   res.json(products)
 }
