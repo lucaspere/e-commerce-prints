@@ -3,7 +3,7 @@ const { isEmail } = require('validator')
 const db = require('../db/db')
 
 module.exports = {
-   get,
+   list,
    create
 }
 
@@ -26,7 +26,7 @@ const Order = db.model('Order', {
    }
 })
 
-async function get(_id) {
+async function list(_id) {
    const order = await Order.findById(_id)
       .populate('products')
       .exec()
