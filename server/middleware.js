@@ -1,3 +1,5 @@
+const { STATUS_CODES } = require('http')
+
 module.exports = {
    cors,
    handleError,
@@ -24,7 +26,6 @@ function cors(req, res, next) {
 }
 
 function handleError(err, req, res, next) {
-   console.error(err)
    if (res.headersSent) return next(err)
    
    const statusCode = err.statusCode || 500

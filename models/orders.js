@@ -26,12 +26,22 @@ const Order = db.model('Order', {
    }
 })
 
-async function list(_id) {
-   const order = await Order.findById(_id)
+async function list(opts = {}) {
+   const { offset = 0, limit = 25, username, productId, status } = opts
+
+   const query = {}
+   if (username) query.username = username
+   if (productId) query.products = productId
+   if (status) query.status = status
+
+   const orders = await Order.find(query)
+      .sort({_id: 1})
+      .skip(offset)
+      .limit(limit)
       .populate('products')
       .exec()
 
-   return order
+   return orders
 }
 
 async function create(fields) {

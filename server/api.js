@@ -60,11 +60,15 @@ async function createOrder (req, res, next) {
 
 async function listOrders (req, res, next) {
    const { offset = 0, limit = 25, productId, status } = req.query
-   const orders = await Orders.list({
-   offset: Number(offset),
-   limit: Number(limit),
-   productId,
-   status
-   })
+
+   const opts = {
+      offset: Number(offset),
+      limit: Number(limit),
+      productId,
+      status
+    }
+
+   const orders = await Orders.list(opts)
+
    res.json(orders)
 }
