@@ -1,5 +1,6 @@
 const Products = require('../models/products')
 const Orders = require('../models/orders')
+const User = require('../models/user')
 const autoCatch = require('./lib/auto-catch')
 
 module.exports = autoCatch({
@@ -9,16 +10,19 @@ module.exports = autoCatch({
    editProduct,
    deleteProduct,
    createOrder,
-   listOrders
+   listOrders,
+   createUser
 })
 
 async function deleteProduct(req, res, next) {
    await Products.remove(req.params.id)
 
-   res.json({success: true})
+   res.json({ success: true })
 }
 
 async function editProduct(req, res, next) {
+   if(!req.isAdmin) return forbidden(next)
+
    const change = req.body
    const product = await Products.edit(req.params.id, change)
 
@@ -26,8 +30,9 @@ async function editProduct(req, res, next) {
 }
 
 async function createProduct(req, res, next) {
-   const product = await Products.create(req.body)
+   if(!req.isAdmin) return forbidden(next)
 
+   const product = await Products.create(req.body)
    res.json(product)
 }
 
@@ -52,13 +57,15 @@ async function getProduct(req, res, next) {
    res.json(products)
 }
 
-async function createOrder (req, res, next) {
-   console.log(req.body)
+async function createOrder(req, res, next) {
+   const fields = req.body
+   if(!req.isAdmin) fields.username = req.user.username
+
    const order = await Orders.create(req.body)
    res.json(order)
 }
 
-async function listOrders (req, res, next) {
+async function listOrders(req, res, next) {
    const { offset = 0, limit = 25, productId, status } = req.query
 
    const opts = {
@@ -68,7 +75,22 @@ async function listOrders (req, res, next) {
       status
     }
 
+    if(!req.isAdmin) opts.username = req.user.username
+
    const orders = await Orders.list(opts)
 
    res.json(orders)
+}
+
+async function createUser(req, res, next) {
+   const user = await User.create(req.body)
+   const { username, email } = user
+
+   res.json({ username, email })
+}
+
+function forbidden (next) {
+   const err = new Error('Forbidden')
+   err.statusCode = 403
+   return next(err)
 }

@@ -2,7 +2,6 @@ const express = require('express')
 const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 
-
 const api = require('./api')
 const auth = require('./auth')
 const middleware = require('./middleware')
@@ -17,13 +16,15 @@ app.use(cookieParser())
 
 
 app.get('/products', api.listProducts)
-app.post('/products', auth.ensureAdmin, api.createProduct)
+app.post('/products', auth.ensureUser, api.createProduct)
 app.get('/products/:id', api.getProduct)
-app.put('/products/:id', auth.ensureAdmin, api.editProduct)
-app.delete('/products/:id', auth.ensureAdmin, api.deleteProduct)
+app.put('/products/:id', auth.ensureUser, api.editProduct)
+app.delete('/products/:id', auth.ensureUser, api.deleteProduct)
 
-app.get('/orders', auth.ensureAdmin, api.listOrders)
-app.post('/orders', auth.ensureAdmin, api.createOrder)
+app.get('/orders', auth.ensureUser, api.listOrders)
+app.post('/orders', auth.ensureUser, api.createOrder)
+
+app.post('/users', api.createUser)
 
 app.post('/login', auth.authenticate, auth.login)
 

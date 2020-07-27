@@ -1,8 +1,7 @@
 const passport = require('passport')
 const jwt = require('jsonwebtoken')
 const Strategy = require('passport-local').Strategy
-
-const autoCatch = require('./lib/auto-catch')
+const bcrypt = require('bcrypt')
 
 const jwtSecret = process.env.JWT_SECRET || 'marque zero'
 const adminPassword = process.env.ADMIN_PASSWORD || 'iamthelucas'
@@ -14,7 +13,7 @@ const authenticate = passport.authenticate('local', { session: false })
 module.exports = {
    authenticate,
    login,
-   ensureAdmin: autoCatch(ensureAdmin)
+   ensureUser
 }
 
 async function login(req, res, next) {
@@ -33,11 +32,14 @@ function sign(payload) {
    })
 }
 
-async function ensureAdmin(req, res, next) {
+async function ensureUser(req, res, next) {
    const jwtString = req.headers.authorization || req.cookies.jwt
    const payload = await verify(jwtString)
-   console.log(payload)
-   if (payload.username === 'admin') return next()
+   if (payload.username) {
+      req.user = payload
+      if(req.user.username === 'admin') req.isAdmin = true
+      return next()
+   }
 
    const err = new Error('Unauthorized')
    err.statusCode = 401
@@ -60,9 +62,18 @@ function verify(jwtString = '') {
 }
 
 function adminStrategy() {
-   return new Strategy(function (username, password, cb) {
+   return new Strategy(async function (username, password, cb) {
       const isAdmin = username === 'admin' && password === adminPassword
       if (isAdmin) return cb(null, { username: 'admin' })
+
+      try {
+         const user = await Users.get(username)
+         if(!user) return cb(null, { username: 'admin'})
+
+         const isUser = await bcrypt.compare(password, user.password)
+         if(isUser) return cb(null, { username: user.name })
+      } catch (err) {}
+
       cb(null, false)
    })
 }
