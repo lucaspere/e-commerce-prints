@@ -83,9 +83,7 @@ async function remove(username) {
 
 async function create(fields) {
    const user = new User(fields)
-   console.log(user)
    await hashPassword(user)
-   console.log("Foi Aqui?")
    await user.save()
 
    return user

@@ -45,7 +45,6 @@ async function list(opts = {}) {
 }
 
 async function create(fields) {
-   console.log(fields)
    const order = await new Order(fields).save()
    await order.populate('products').execPopulate()
    return order
